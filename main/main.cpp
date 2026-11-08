@@ -5,8 +5,8 @@
 #include "screens.h"
 #include "actions.h"
 
-#include "graphManager.hpp"
-#include "snake.hpp"
+#include "ui/graphManager.hpp"
+#include "snake/snake.hpp"
 
 extern "C" void app_main()
 {
@@ -15,17 +15,13 @@ extern "C" void app_main()
     bsp_display_backlight_on();
 
     bsp_display_lock(portMAX_DELAY);
-    start_snake_game();
-    
+
     // EEZ Studio UI init
-    //ui_init();
+    ui_init();
     // RuneOS UI init
-    /*printf("TEST!!!");
-    GraphManager* gm = new GraphManager(SENSOR);
-    gm->NextData(50);
-    gm->NextData(100);
-    gm->NextData(150);
-    gm->NextData(50);*/
+    printf("TEST!!!");
+    
+    //GraphManager* gm = new GraphManager(SENSOR);
 
     bsp_display_unlock();
     printf("RuneOS screen initialised!\n");
