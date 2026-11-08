@@ -17,13 +17,12 @@ class SensorManager
         // Initialises the BSP I2C bus and attaches both sensors
         esp_err_t init();
 
-        // Measures SHT40, then SGP41 compensated with the SHT40 values
+        // Measures SHT40, then calls SGP41 to meassure adjusted by the SHT40 values
         // Expects sampling at 1Hz frequency
         esp_err_t update();
 
-        // readonly getter
+        // readonly getters
         const SHT& getSHT() const { return sht; };
-        // readonly getter
         const SGP& getSGP() const { return sgp; };
 
     private:

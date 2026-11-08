@@ -65,8 +65,9 @@ esp_err_t SGP::measure(float temperatureC, float humidityRH)
     if (temperatureC < -45.0f) temperatureC = -45.0f;
     if (temperatureC > 130.0f) temperatureC = 130.0f;
 
-    const uint16_t rhTicks = (uint16_t)(humidityRH * 65535.0f / 100.0f);
-    const uint16_t tTicks = (uint16_t)((temperatureC + 45.0f) * 65535.0f / 175.0f);
+    // rounded, so the defaults (50 %RH, 25 C) give exactly the datasheet's 0x8000 / 0x6666
+    const uint16_t rhTicks = (uint16_t)(humidityRH * 65535.0f / 100.0f + 0.5f);
+    const uint16_t tTicks = (uint16_t)((temperatureC + 45.0f) * 65535.0f / 175.0f + 0.5f);
 
     const bool conditioning = isConditioning();
     const uint16_t command = conditioning ? CMD_EXECUTE_CONDITIONING : CMD_MEASURE_RAW_SIGNALS;
@@ -96,7 +97,7 @@ esp_err_t SGP::measure(float temperatureC, float humidityRH)
     }
 
     // waits for the sensor to complete sampling
-    vTaskDelay(pdMS_TO_TICKS(MEASURE_DELAY_MS));
+    sensirion::waitAtLeastMs(MEASURE_DELAY_MS);
 
     // while conditioning, returns only VOC (3 bytes)
     // normal measurement returns VOC + NOx (6 bytes)

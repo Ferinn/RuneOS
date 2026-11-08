@@ -13,8 +13,13 @@ class SGP
         // outside of freeing resources, this also turns the sensor's heater off
         ~SGP();
 
+        // non-copyable: a copy would share the I2C device handle and its destructor
+        // would turn the heater off and remove the device from the bus
+        SGP(const SGP&) = delete;
+        SGP& operator=(const SGP&) = delete;
+
         // attaches the sensor device and stores it in this instance
-        // starts a timer for MEASURE_DELAY_MS entering conditioning phase for roughly that time
+        // starts the CONDITIONING_US (10 s) conditioning window, measured from this call
         esp_err_t init(i2c_master_bus_handle_t bus);
         
         // expects to be called roughly 1Hz
@@ -26,7 +31,7 @@ class SGP
         // turns the sensor's heater off and returns it into idle state
         esp_err_t turnHeaterOff();
 
-        // getters
+        // readonly getters
         uint16_t getSrawVoc() const { return srawVoc; }
         uint16_t getSrawNox() const { return srawNox; }
         bool isConditioning() const;

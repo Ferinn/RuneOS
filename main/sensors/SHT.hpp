@@ -13,6 +13,11 @@ class SHT
         // only frees resources, heating element is unused as of now
         ~SHT();
 
+        // non-copyable: a copy would share the I2C device handle and its destructor
+        // would remove the device from the bus while the original still uses it
+        SHT(const SHT&) = delete;
+        SHT& operator=(const SHT&) = delete;
+
         // attaches the sensor device and stores it in this instance
         esp_err_t init(i2c_master_bus_handle_t bus);
 
@@ -22,7 +27,7 @@ class SHT
         // for raw data interpretation
         esp_err_t measure();
 
-        //getters
+        //readonly getters
         float getTemperatureC() const { return temperatureC; }
         float getHumidityRH() const { return humidityRH; }
         bool isValid() const { return shtValid; }

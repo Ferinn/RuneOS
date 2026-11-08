@@ -6,7 +6,7 @@
 #include "actions.h"
 
 #include "ui/graphManager.hpp"
-#include "snake/snake.hpp"
+#include "sensors/sensorManager.hpp"
 
 extern "C" void app_main()
 {
@@ -19,15 +19,24 @@ extern "C" void app_main()
     // EEZ Studio UI init
     ui_init();
     // RuneOS UI init
-    printf("TEST!!!");
-    
     //GraphManager* gm = new GraphManager(SENSOR);
 
     bsp_display_unlock();
     printf("RuneOS screen initialised!\n");
 
-    while (1) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+    SensorManager* sm = new SensorManager();
+    sm->init();
+
+    // fixed 1 Hz period regardless of how long update() takes (SGP41 expects 1 s sampling)
+    TickType_t lastWake = xTaskGetTickCount();
+    while (1)
+    {
+        vTaskDelayUntil(&lastWake, pdMS_TO_TICKS(1000));
+        sm->update();
+        const SHT& shtref = sm->getSHT();
+        printf("SHT40 readings:\nTemperature (C): %.3f\nRelative Humidity: %.3f\n", shtref.getTemperatureC(), shtref.getHumidityRH());
+        const SGP& sgpref = sm->getSGP();
+        printf("SGP41 readings:\nraw VOC: %u\nraw NOx: %u\n", sgpref.getSrawVoc(), sgpref.getSrawNox());
     }
 }
 

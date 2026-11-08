@@ -1,5 +1,15 @@
 #include "sensirion.hpp"
 
+#include <cstddef>
+#include "sdkconfig.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+void sensirion::waitAtLeastMs(int ms)
+{
+    vTaskDelay(pdMS_TO_TICKS(ms) + 1);
+}
+
 uint8_t sensirion::crc8(const uint8_t data[2])
 {
     uint8_t crc = 0xFF;

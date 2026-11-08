@@ -9,6 +9,11 @@ namespace sensirion
 {
     constexpr int I2C_TIMEOUT_MS = 100;
 
+    // Blocks for at least `ms` milliseconds. Plain vTaskDelay(pdMS_TO_TICKS(ms)) can return
+    // up to one tick early (10 ms at CONFIG_FREERTOS_HZ=100), which is shorter than the
+    // sensors' max measurement duration, so one extra tick is added.
+    void waitAtLeastMs(int ms);
+
     // Sensirion CRC-8
     // 4.6 checksum calc, page 13/22 from: https://sensirion.com/media/documents/5FE8673C/61E96F50/Sensirion_Gas_Sensors_Datasheet_SGP41.pdf
     uint8_t crc8(const uint8_t data[2]);

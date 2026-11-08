@@ -42,11 +42,12 @@ esp_err_t SHT::init(i2c_master_bus_handle_t bus)
 esp_err_t SHT::measure()
 {
     shtValid = false;
-    if (!device) {
+    if (!device)
+    {
         return ESP_ERR_INVALID_STATE;
     }
 
-    // only sends the command, including CRC, doesn't require any parameters
+    // single command byte; SHT40 commands carry no parameters and no CRC
     const uint8_t cmd = CMD_MEASURE_HIGH_PRECISION;
     esp_err_t err = i2c_master_transmit(device, &cmd, 1, sensirion::I2C_TIMEOUT_MS);
     if (err != ESP_OK) {
@@ -55,7 +56,7 @@ esp_err_t SHT::measure()
     }
 
     // waits for the sensor to complete sampling
-    vTaskDelay(pdMS_TO_TICKS(MEASURE_DELAY_MS));
+    sensirion::waitAtLeastMs(MEASURE_DELAY_MS);
 
     // expects 6 bytes:
         // 2 byte word for temperature
