@@ -27,12 +27,6 @@
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32p4"
   },
-  "clangd.path": "C:\\Espressif\\tools\\esp-clang\\esp-19.1.2_20250312\\esp-clang\\bin\\clangd.exe",
-  "clangd.arguments": [
-    "--background-index",
-    "--query-driver=**",
-    "--compile-commands-dir=d:\\Development\\ESP32\\RuneOS\\build"
-  ],
   "idf.flashType": "UART",
   "idf.port": "COM4"
 }
