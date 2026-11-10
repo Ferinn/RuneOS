@@ -7,6 +7,8 @@
 
 #include "ui/graphManager.hpp"
 #include "sensors/sensorManager.hpp"
+#include "sensors/gas_index_algorithm/VOCGasIndexAlgorithm.h"
+#include "sensors/gas_index_algorithm/NOxGasIndexAlgorithm.h"
 
 extern "C" void app_main()
 {
@@ -27,16 +29,29 @@ extern "C" void app_main()
     SensorManager* sm = new SensorManager();
     sm->init();
 
-    // fixed 1 Hz period regardless of how long update() takes (SGP41 expects 1 s sampling)
+    VOCGasIndexAlgorithm vocAlgorithm;
+    NOxGasIndexAlgorithm noxAlgorithm;
+    int32_t vocIndex = 0;
+    int32_t noxIndex = 0;
+
     TickType_t lastWake = xTaskGetTickCount();
     while (1)
     {
         vTaskDelayUntil(&lastWake, pdMS_TO_TICKS(1000));
         sm->update();
+
         const SHT& shtref = sm->getSHT();
-        printf("SHT40 readings:\nTemperature (C): %.3f\nRelative Humidity: %.3f\n", shtref.getTemperatureC(), shtref.getHumidityRH());
         const SGP& sgpref = sm->getSGP();
+
+        if (sgpref.isValid() && !sgpref.wasConditioning())
+        {
+            vocIndex = vocAlgorithm.process(sgpref.getSrawVoc());
+            noxIndex = noxAlgorithm.process(sgpref.getSrawNox());
+        }
+
+        printf("SHT40 readings:\nTemperature (C): %.3f\nRelative Humidity: %.3f\n", shtref.getTemperatureC(), shtref.getHumidityRH());
         printf("SGP41 readings:\nraw VOC: %u\nraw NOx: %u\n", sgpref.getSrawVoc(), sgpref.getSrawNox());
+        printf("Gas index:\nVOC index: %ld\nNOx index: %ld\n", (long)vocIndex, (long)noxIndex);
     }
 }
 

@@ -35,6 +35,8 @@ class SGP
         uint16_t getSrawVoc() const { return srawVoc; }
         uint16_t getSrawNox() const { return srawNox; }
         bool isConditioning() const;
+        
+        bool wasConditioning() const { return lastConditioning; }
         bool isValid() const { return sgpValid; }
         bool isAttached() const { return device != nullptr; }
         uint8_t getAddress() const { return i2cAddress; }
@@ -48,4 +50,5 @@ class SGP
         uint16_t srawVoc = 0;
         uint16_t srawNox = 0;
         bool sgpValid = false;
+        bool lastConditioning = false;
 };

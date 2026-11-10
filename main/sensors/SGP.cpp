@@ -118,6 +118,7 @@ esp_err_t SGP::measure(float temperatureC, float humidityRH)
     // converting to readable values
     srawVoc = sensirion::toWord(&rx[0]);
     srawNox = conditioning ? 0 : sensirion::toWord(&rx[3]);
+    lastConditioning = conditioning;
 
     sgpValid = true;
     return ESP_OK;
