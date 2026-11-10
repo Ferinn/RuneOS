@@ -8,6 +8,4 @@ idf_component_register(
              bsp
              esp_driver_i2c
              esp_timer
-             espressif__esp_lcd_touch
-             espressif__esp_lcd_touch_gt911
 )
